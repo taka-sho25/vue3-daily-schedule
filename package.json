@@ -16,16 +16,10 @@
     "api:build": "aspida && aspida-mock"
   },
   "dependencies": {
-    "@aspida/fetch": "^1.14.0",
     "@nuxt/eslint": "^0.3.13",
-    "@vee-validate/zod": "^4.12.8",
-    "aspida": "^1.14.0",
-    "aspida-mock": "^0.11.1",
     "nuxt": "^3.11.2",
-    "vee-validate": "^4.12.8",
     "vue": "^3.4.27",
-    "vue-router": "^4.3.2",
-    "zod": "^3.23.8"
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.3.13",
