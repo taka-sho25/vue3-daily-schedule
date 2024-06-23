@@ -22,13 +22,12 @@
           @mouseup="doDrag"
         >
           <div
-            v-for="(dayOfWeek, idx) in dayOfWeekArray"
-            :key="idx"
+            v-for="(dayOfWeek, dayOfWeekIndex) in dayOfWeekArray"
+            :key="dayOfWeekIndex"
             class="schedule-line"
           >
             <div
               ref="ruleDayOfWeekItem"
-              :data-val="dayOfWeek"
               class="dayOfWeek-text"
             >
               {{ dayOfWeek }}
@@ -37,14 +36,14 @@
               v-for="(time, i) in timeArray"
               :key="i"
               ref="ruleTimeItem"
-              :data-dayOfWeek="i + 1"
+              :data-dayOfWeek="dayOfWeekIndex"
               :data-time="time"
               :class="{
                 schedule: true,
                 pointer: !disabled,
                 active: false,
               }"
-              @click="toggleSchedule"
+              @click="toggleSchedule(dayOfWeekIndex, time)"
             >
               <span />
             </div>
@@ -88,7 +87,7 @@ const timeArray = computed(() => {
 
 const startDrag = () => {};
 const doDrag = () => {};
-const toggleSchedule = () => {};
+const toggleSchedule = (dayOfWeekIndex: number, time: number) => {};
 </script>
 
 <style scoped>
@@ -129,13 +128,19 @@ const toggleSchedule = () => {};
   display: flex;
   flex-wrap: wrap;
 }
+.schedule-line .schedule:nth-child(2) {
+  border-radius: 50% 0 0 50%;
+}
+.schedule-line .schedule:nth-child(25) {
+  border-radius: 0 50% 50% 0;
+}
 .dayOfWeek-text,
 .schedule {
   flex-basis: 0;
   flex-grow: 1;
   max-width: 100%;
-  padding: 10px;
-  margin: 1px;
+  padding: 8px;
+  margin: 4px 0;
   font-size: 10px;
 }
 .dayOfWeek-text {
@@ -143,6 +148,11 @@ const toggleSchedule = () => {};
 }
 .schedule {
   background-color: #1d92cc;
+  border-right: 1px solid #005a86;
+
+  &:last-child {
+    border-right: none;
+  }
 
   &:hover {
     background-color: #a5d3ff;
