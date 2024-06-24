@@ -38,10 +38,10 @@
               ref="ruleTimeItem"
               :data-dayOfWeek="dayOfWeekIndex"
               :data-time="time"
+              class="schedule"
               :class="{
-                schedule: true,
                 pointer: !disabled,
-                active: false,
+                active: timetable[dayOfWeekIndex].find((el) => el === time) !== undefined,
               }"
               @click="toggleSchedule(dayOfWeekIndex, time)"
             >
@@ -63,7 +63,7 @@ type Props = {
   disabled?: boolean;
 };
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   disabled: false,
 });
 
@@ -87,7 +87,21 @@ const timeArray = computed(() => {
 
 const startDrag = () => {};
 const doDrag = () => {};
-const toggleSchedule = (dayOfWeekIndex: number, time: number) => {};
+
+const toggleSchedule = (dayOfWeekIndex: number, time: number) => {
+  if (props.disabled) {
+    return;
+  }
+
+  const selectedTimeIndex = timetable.value[dayOfWeekIndex].findIndex(
+    (el: number) => el === time,
+  );
+  if (selectedTimeIndex !== -1) {
+    timetable.value[dayOfWeekIndex].splice(selectedTimeIndex, 1);
+  } else {
+    timetable.value[dayOfWeekIndex].push(time);
+  }
+};
 </script>
 
 <style scoped>
@@ -147,22 +161,22 @@ const toggleSchedule = (dayOfWeekIndex: number, time: number) => {};
   text-align: center;
 }
 .schedule {
-  background-color: #1d92cc;
-  border-right: 1px solid #005a86;
+  background-color: var(--vds-bg);
+  border-right: 1px solid var(--vds-border);
 
   &:last-child {
     border-right: none;
   }
 
   &:hover {
-    background-color: #a5d3ff;
+    background-color: var(--vds-hover);
   }
 
   &.active {
-    background-color: #20a0e0;
+    background-color: var(--vds-active);
 
     &:hover {
-      background-color: #20a0e0;
+      background-color: var(--vds-hover);
     }
   }
 }

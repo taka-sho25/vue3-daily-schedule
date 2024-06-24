@@ -13,3 +13,12 @@ useSeoMeta({
     <NuxtPage />
   </NuxtLayout>
 </template>
+
+<style>
+:root {
+  --vds-bg: #84c9fc;
+  --vds-active: #366582;
+  --vds-hover: #84dafc7a;
+  --vds-border: #005a86;
+}
+</style>
