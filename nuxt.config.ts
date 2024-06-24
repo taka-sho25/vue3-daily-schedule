@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     config: {
       stylistic: {
         semi: true,
+        braceStyle: '1tbs',
       },
     },
   },
