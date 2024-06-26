@@ -27,7 +27,7 @@
             class="schedule-line"
           >
             <div
-              ref="ruleDayOfWeekItem"
+              ref="dayOfWeekItem"
               class="dayOfWeek-text"
             >
               {{ dayOfWeek }}
@@ -35,7 +35,7 @@
             <div
               v-for="(time, i) in timeArray"
               :key="i"
-              ref="ruleTimeItem"
+              ref="timeItem"
               :data-dayOfWeek="dayOfWeekIndex"
               :data-time="time"
               class="schedule"
@@ -67,6 +67,12 @@ const props = withDefaults(defineProps<Props>(), {
   disabled: false,
 });
 
+const isDragging = ref(false);
+const startDragDayOfWeek = ref(0);
+const startDragTime = ref(0);
+const draggableArea = ref<typeof HTMLDivElement>();
+const dayOfWeekItem = ref<typeof HTMLDivElement[]>();
+const timeItem = ref<typeof HTMLDivElement[]>();
 const timetable = ref<Record<number, number[]>>({
   0: [],
   1: [],
@@ -85,8 +91,65 @@ const timeArray = computed(() => {
   return new Array(24).fill(null).map((_, i) => i);
 });
 
-const startDrag = () => {};
-const doDrag = () => {};
+const startDrag = (event: MouseEvent) => {
+  if (props.disabled) {
+    return;
+  }
+
+  isDragging.value = true;
+
+  const target = event.target;
+  if (!(target instanceof HTMLDivElement)) {
+    return;
+  }
+
+  const { dayofweek, time } = target.dataset;
+  if (!dayofweek || !time) {
+    return;
+  }
+
+  startDragDayOfWeek.value = Number(dayofweek);
+  startDragTime.value = Number(time);
+};
+
+const doDrag = (event: MouseEvent) => {
+  if (props.disabled || !isDragging.value) {
+    return;
+  }
+
+  try {
+    const target = event.target;
+    if (!(target instanceof HTMLDivElement)) {
+      return;
+    }
+
+    const { dayofweek, time } = target.dataset;
+    if (!dayofweek || !time) {
+      return;
+    }
+
+    const endDragDayOfWeek = Number(dayofweek);
+    const endDragTime = Number(time);
+    if (startDragDayOfWeek.value === endDragDayOfWeek && startDragTime.value === endDragTime) {
+      return;
+    }
+
+    for (let i = startDragDayOfWeek.value; i <= endDragDayOfWeek; i++) {
+      for (let ii = startDragTime.value; ii <= endDragTime; ii++) {
+        const indexDayOfWeek = timetable.value[i].findIndex(time => time === ii);
+        if (indexDayOfWeek !== -1) {
+          timetable.value[i].splice(indexDayOfWeek, 1);
+        } else {
+          timetable.value[i].push(ii);
+        }
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+
+  isDragging.value = false;
+};
 
 const toggleSchedule = (dayOfWeekIndex: number, time: number) => {
   if (props.disabled) {
@@ -142,19 +205,14 @@ const toggleSchedule = (dayOfWeekIndex: number, time: number) => {
   display: flex;
   flex-wrap: wrap;
 }
-.schedule-line .schedule:nth-child(2) {
-  border-radius: 50% 0 0 50%;
-}
-.schedule-line .schedule:nth-child(25) {
-  border-radius: 0 50% 50% 0;
-}
+
 .dayOfWeek-text,
 .schedule {
   flex-basis: 0;
   flex-grow: 1;
   max-width: 100%;
   padding: 8px;
-  margin: 4px 0;
+  margin: 2px 0;
   font-size: 10px;
 }
 .dayOfWeek-text {
